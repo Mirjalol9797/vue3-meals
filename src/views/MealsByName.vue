@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="p-8">
+    <div class="p-8 pb-0">
       <input
         v-model="keyword"
         type="text"
@@ -10,51 +10,18 @@
       />
     </div>
     <div class="grid grid-cols-1 md:grid-cols-5 gap-8 p-8">
-      <div
-        v-for="meal of meals"
-        :key="meal.idMeal"
-        class="bg-white shadow rounded-xl"
-      >
-        <img
-          :src="meal.strMealThumb"
-          :alt="meal.strMeal"
-          class="rounded-t-xl w-full h-56 object-cover"
-        />
-        <div class="px-3">
-          <h3 class="font-bold">
-            {{ meal.strMeal }}
-          </h3>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum,
-            rerum!
-          </p>
-          <div class="p-3">
-            <a
-              :href="meal.strYoutube"
-              target="_blank"
-              class="px-3 py-2 rounded border-2 border-red-600 text-white bg-red-500 inline-block hover:bg-red-600 transition-colors mr-2"
-              >Youtube</a
-            >
-            <router-link
-              to="/"
-              class="px-3 py-2 rounded border-2 border-green-600 text-white bg-green-500 inline-block hover:bg-green-600 transition-colors"
-              >View</router-link
-            >
-          </div>
-        </div>
-        <pre>
-        {{ meal }}
-
-        </pre>
-      </div>
+      <MealItem v-for="meal of meals" :key="meal.idMeal" :meal="meal" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import store from "../store";
+import { useRoute } from "vue-router";
+import MealItem from "../components/MealItem.vue";
 
+const route = useRoute();
 const keyword = ref("");
 const meals = computed(() => store.state.searchedMeals);
 
@@ -62,6 +29,13 @@ function searchMeals() {
   store.dispatch("searchMeals", keyword.value);
   // dispatch for action
 }
+
+onMounted(() => {
+  keyword.value = route.params.name;
+  if (keyword.value) {
+    searchMeals();
+  }
+});
 </script>
 
 <style></style>
